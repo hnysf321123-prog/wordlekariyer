@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Word Explorer – Grade 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --correct: #4caf50;
+    --present: #ff9800;
+    --absent: #9e9e9e;
+    --correct-dark: #388e3c;
+    --present-dark: #f57c00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  body {
+    font-family: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    transition: background 0.5s ease;
+    overflow-x: hidden;
+  }
+
+  /* ===== THEMES ===== */
+  body.theme-family     { background: linear-gradient(160deg, #fff8f0 0%, #ffe0c8 100%); }
+  body.theme-weather    { background: linear-gradient(160deg, #e8f4fd 0%, #b3d9f7 100%); }
+  body.theme-outdoors   { background: linear-gradient(160deg, #f0faf0 0%, #c8e6c9 100%); }
+  body.theme-past       { background: linear-gradient(160deg, #fdf6e3 0%, #e8d5a3 100%); }
+  body.theme-celebrate  { background: linear-gradient(160deg, #fef9ff 0%, #f3c4fb 100%); }
+  body.theme-art        { background: linear-gradient(160deg, #fff0f6 0%, #ffc0cb 100%); }
+  body.theme-community  { background: linear-gradient(160deg, #f0f4ff 0%, #c5cae9 100%); }
+  body.theme-animals    { background: linear-gradient(160deg, #f9fbe7 0%, #dce775 100%); }
+  body.theme-learning   { background: linear-gradient(160deg, #e8eaf6 0%, #9fa8da 100%); }
+  body.theme-food       { background: linear-gradient(160deg, #fff3e0 0%, #ffcc80 100%); }
+
+  /* Floating decos */
+  .deco {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 52px; opacity: 0.1; user-select: none;
+    -webkit-animation: floatDeco 8s ease-in-out infinite;
+    animation: floatDeco 8s ease-in-out infinite;
+  }
+  .deco:nth-child(1) { top: 5%; left: 3%; -webkit-animation-delay: 0s; animation-delay: 0s; }
+  .deco:nth-child(2) { top: 15%; right: 5%; -webkit-animation-delay: 1.5s; animation-delay: 1.5s; }
+  .deco:nth-child(3) { bottom: 22%; left: 4%; -webkit-animation-delay: 3s; animation-delay: 3s; }
+  .deco:nth-child(4) { bottom: 10%; right: 6%; -webkit-animation-delay: 4.5s; animation-delay: 4.5s; }
+  .deco:nth-child(5) { top: 50%; left: 1%; -webkit-animation-delay: 2s; animation-delay: 2s; }
+  .deco:nth-child(6) { top: 40%; right: 2%; -webkit-animation-delay: 5s; animation-delay: 5s; }
+
+  @-webkit-keyframes floatDeco {
+    0%, 100% { -webkit-transform: translateY(0) rotate(0deg); transform: translateY(0) rotate(0deg); }
+    50% { -webkit-transform: translateY(-16px) rotate(6deg); transform: translateY(-16px) rotate(6deg); }
+  }
+  @keyframes floatDeco {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-16px) rotate(6deg); }
+  }
+
+  /* ===== APP ===== */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 12px 32px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+  }
+
+  /* ===== HEADER ===== */
+  .site-header { width: 100%; text-align: center; margin-bottom: 6px; }
+
+  .site-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 7vw, 36px);
+    letter-spacing: 1px;
+    color: #333;
+    line-height: 1.1;
+  }
+
+  .site-title span { display: inline-block; }
+  .site-title span:nth-child(1)  { color: #e53935; }
+  .site-title span:nth-child(2)  { color: #fb8c00; }
+  .site-title span:nth-child(3)  { color: #fdd835; }
+  .site-title span:nth-child(4)  { color: #43a047; }
+  .site-title span:nth-child(6)  { color: #1e88e5; }
+  .site-title span:nth-child(7)  { color: #8e24aa; }
+  .site-title span:nth-child(8)  { color: #e53935; }
+  .site-title span:nth-child(9)  { color: #00897b; }
+  .site-title span:nth-child(10) { color: #e53935; }
+  .site-title span:nth-child(11) { color: #fb8c00; }
+  .site-title span:nth-child(12) { color: #fdd835; }
+  .site-title span:nth-child(13) { color: #43a047; }
+  .site-title span:nth-child(14) { color: #1e88e5; }
+  .site-title span:nth-child(15) { color: #8e24aa; }
+
+  .grade-badge {
+    display: inline-block;
+    background: #fff;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 14px;
+    margin-top: 4px;
+  }
+
+  /* ===== UNIT SELECTION ===== */
+  #unit-screen { width: 100%; }
+
+  .screen-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #666;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+
+  .unit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .unit-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    border: 3px solid transparent;
+    position: relative;
+    overflow: hidden;
+    /* iOS touch fix */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  .unit-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    border-radius: 18px 18px 0 0;
+  }
+
+  .unit-card:active { opacity: 0.75; }
+
+  .unit-card .emoji { font-size: 32px; display: block; margin-bottom: 6px; }
+  .unit-card .unit-num { font-size: 10px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+  .unit-card .unit-name { font-size: 12px; font-weight: 800; color: #333; line-height: 1.3; margin-top: 2px; }
+  .unit-card .word-count { font-size: 10px; color: #888; margin-top: 3px; }
+
+  .unit-card[data-theme="family"]    { border-color: #ffccbc; } .unit-card[data-theme="family"]::before    { background: #ff7043; }
+  .unit-card[data-theme="weather"]   { border-color: #b3e5fc; } .unit-card[data-theme="weather"]::before   { background: #29b6f6; }
+  .unit-card[data-theme="outdoors"]  { border-color: #c8e6c9; } .unit-card[data-theme="outdoors"]::before  { background: #66bb6a; }
+  .unit-card[data-theme="past"]      { border-color: #d7ccc8; } .unit-card[data-theme="past"]::before      { background: #8d6e63; }
+  .unit-card[data-theme="celebrate"] { border-color: #e1bee7; } .unit-card[data-theme="celebrate"]::before { background: #ab47bc; }
+  .unit-card[data-theme="art"]       { border-color: #ffcdd2; } .unit-card[data-theme="art"]::before       { background: #ef5350; }
+  .unit-card[data-theme="community"] { border-color: #c5cae9; } .unit-card[data-theme="community"]::before { background: #5c6bc0; }
+  .unit-card[data-theme="animals"]   { border-color: #dcedc8; } .unit-card[data-theme="animals"]::before   { background: #9ccc65; }
+  .unit-card[data-theme="learning"]  { border-color: #d1c4e9; } .unit-card[data-theme="learning"]::before  { background: #7e57c2; }
+  .unit-card[data-theme="food"]      { border-color: #ffe0b2; } .unit-card[data-theme="food"]::before      { background: #ffa726; }
+
+  /* ===== GAME SCREEN ===== */
+  #game-screen {
+    display: none;
+    width: 100%;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+  }
+
+  .game-topbar {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    gap: 8px;
+  }
+
+  .back-btn {
+    background: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #555;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    min-height: 44px; /* iOS minimum touch target */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .game-unit-info { flex: 1; text-align: center; }
+  .game-unit-emoji { font-size: 18px; }
+  .game-unit-name { font-size: 12px; font-weight: 800; color: #444; }
+
+  .progress-pill {
+    background: #fff;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-height: 44px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+  }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: -webkit-flex;
+    display: flex;
+    gap: 12px;
+    -webkit-justify-content: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+  }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+  .legend-dot.correct { background: var(--correct); }
+  .legend-dot.present { background: var(--present); }
+  .legend-dot.absent  { background: var(--absent); }
+
+  /* ===== HINT ===== */
+  .hint-bar {
+    background: rgba(255,255,255,0.75);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  /* ===== GRID ===== */
+  .grid-wrap {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .grid-row {
+    display: -webkit-flex;
+    display: flex;
+    gap: 5px;
+  }
+
+  .tile {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    border: 3px solid #e0e0e0;
+    background: #fff;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    color: #333;
+    text-transform: uppercase;
+    -webkit-transition: border-color 0.1s;
+    transition: border-color 0.1s;
+  }
+
+  /* Responsive tile size */
+  @media (max-width: 380px) {
+    .tile { width: 44px; height: 44px; font-size: 18px; }
+  }
+  @media (max-width: 320px) {
+    .tile { width: 38px; height: 38px; font-size: 16px; }
+  }
+
+  .tile.has-letter { border-color: #bdbdbd; }
+
+  .tile.reveal {
+    -webkit-animation: revealTile 0.5s ease forwards;
+    animation: revealTile 0.5s ease forwards;
+  }
+
+  @-webkit-keyframes revealTile {
+    0%   { -webkit-transform: scaleY(1); transform: scaleY(1); }
+    40%  { -webkit-transform: scaleY(0); transform: scaleY(0); }
+    60%  { -webkit-transform: scaleY(0); transform: scaleY(0); }
+    100% { -webkit-transform: scaleY(1); transform: scaleY(1); }
+  }
+  @keyframes revealTile {
+    0%   { transform: scaleY(1); }
+    40%  { transform: scaleY(0); }
+    60%  { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+  }
+
+  .tile.correct { background: var(--correct); border-color: var(--correct-dark); color: #fff; }
+  .tile.present { background: var(--present); border-color: var(--present-dark); color: #fff; }
+  .tile.absent  { background: var(--absent);  border-color: #757575;            color: #fff; }
+
+  @-webkit-keyframes shakeAnim {
+    0%, 100% { -webkit-transform: translateX(0); transform: translateX(0); }
+    20% { -webkit-transform: translateX(-7px); transform: translateX(-7px); }
+    40% { -webkit-transform: translateX(7px);  transform: translateX(7px); }
+    60% { -webkit-transform: translateX(-4px); transform: translateX(-4px); }
+    80% { -webkit-transform: translateX(4px);  transform: translateX(4px); }
+  }
+  @keyframes shakeAnim {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .tile.shake { -webkit-animation: shakeAnim 0.4s ease; animation: shakeAnim 0.4s ease; }
+
+  /* ===== MESSAGE ===== */
+  .message-area { min-height: 30px; text-align: center; margin-bottom: 6px; }
+
+  .message {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 800;
+    -webkit-animation: popIn 0.3s ease;
+    animation: popIn 0.3s ease;
+  }
+  @-webkit-keyframes popIn {
+    0% { -webkit-transform: scale(0.7); transform: scale(0.7); opacity: 0; }
+    70% { -webkit-transform: scale(1.08); transform: scale(1.08); }
+    100% { -webkit-transform: scale(1); transform: scale(1); opacity: 1; }
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    70% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .message.win  { background: #e8f5e9; color: #2e7d32; }
+  .message.lose { background: #ffebee; color: #c62828; }
+  .message.info { background: rgba(255,255,255,0.85); color: #555; }
+
+  /* ===== NEXT WORD BUTTON ===== */
+  .new-word-btn {
+    display: none;
+    background: #43a047;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 26px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    min-height: 44px;
+    box-shadow: 0 4px 12px rgba(67,160,71,0.35);
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-animation: popIn 0.4s ease;
+    animation: popIn 0.4s ease;
+  }
+  .new-word-btn:active { opacity: 0.85; }
+
+  /* ===== KEYBOARD ===== */
+  .keyboard {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .kb-row {
+    display: -webkit-flex;
+    display: flex;
+    gap: 4px;
+    -webkit-justify-content: center;
+    justify-content: center;
+  }
+
+  .key {
+    background: #fff;
+    border: none;
+    border-radius: 9px;
+    /* Fixed sizes — no flex so iOS doesn't shrink */
+    width: 32px;
+    height: 46px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    text-transform: uppercase;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    /* iOS tap fix */
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+    /* Minimum touch target */
+    min-height: 44px;
+  }
+
+  /* Adjust for small screens */
+  @media (max-width: 380px) {
+    .key { width: 28px; font-size: 12px; }
+    .key.wide { width: 44px; font-size: 10px; }
+  }
+  @media (max-width: 340px) {
+    .key { width: 25px; font-size: 11px; }
+    .key.wide { width: 40px; font-size: 9px; }
+  }
+
+  .key:active { opacity: 0.7; -webkit-transform: scale(0.95); transform: scale(0.95); }
+  .key.wide { width: 50px; font-size: 11px; }
+  .key.correct { background: var(--correct); color: #fff; }
+  .key.present { background: var(--present); color: #fff; }
+  .key.absent  { background: #bdbdbd; color: #fff; }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    -webkit-animation: confettiFall 2s ease-in forwards;
+    animation: confettiFall 2s ease-in forwards;
+  }
+  @-webkit-keyframes confettiFall {
+    0%   { -webkit-transform: translateY(-20px) rotate(0deg); transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { -webkit-transform: translateY(100vh) rotate(720deg); transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body class="theme-family">
+
+<div class="deco" id="deco1">🏠</div>
+<div class="deco" id="deco2">👨‍👩‍👧</div>
+<div class="deco" id="deco3">💻</div>
+<div class="deco" id="deco4">🛁</div>
+<div class="deco" id="deco5">📱</div>
+<div class="deco" id="deco6">🍳</div>
+
+<div id="app">
+  <div class="site-header">
+    <div class="site-title">
+      <span>W</span><span>O</span><span>R</span><span>D</span><span> </span><span>E</span><span>X</span><span>P</span><span>L</span><span>O</span><span>R</span><span>E</span><span>R</span><span>!</span>
+    </div>
+    <div class="grade-badge">🎒 Grade 3 · Trailblazer Level 2</div>
+  </div>
+
+  <!-- UNIT SELECTION -->
+  <div id="unit-screen">
+    <div class="screen-label">Choose a Unit</div>
+    <div class="unit-grid" id="unit-grid"></div>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen">
+    <div class="game-topbar">
+      <button class="back-btn" id="back-btn">← Units</button>
+      <div class="game-unit-info">
+        <span class="game-unit-emoji" id="game-emoji"></span>
+        <span class="game-unit-name" id="game-title"></span>
+      </div>
+      <div class="progress-pill" id="progress-pill">0/0</div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot correct"></div>Right spot</div>
+      <div class="legend-item"><div class="legend-dot present"></div>Wrong spot</div>
+      <div class="legend-item"><div class="legend-dot absent"></div>Not in word</div>
+    </div>
+
+    <div class="hint-bar" id="hint-bar">🔤 Guess the word!</div>
+    <div class="grid-wrap" id="grid"></div>
+    <div class="message-area" id="message-area"></div>
+    <button class="new-word-btn" id="new-word-btn">Next Word ➜</button>
+    <div class="keyboard" id="keyboard"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// WORD DATA
+// ============================================================
+var UNITS = [
+  {
+    id: "family", num: "Unit 1", name: "Family & Home", emoji: "🏠", theme: "family",
+    decos: ["🏠","👨‍👩‍👧","💻","🛁","📱","🍳"],
+    words: ["FRIDGE","LAPTOP","OVEN","ROOF","SHELF","SHOWER","WASH","HIDE","AFRAID","BORED","CLEVER","GLAD","KIND","MEAN","MESSY","TIDY","WORRIED","CAREFUL","SERIOUS"]
+  },
+  {
+    id: "weather", num: "Unit 2", name: "Weather", emoji: "⛅", theme: "weather",
+    decos: ["⛅","🌧","⚡","🌊","❄","🌬"],
+    words: ["FIRE","LAKE","STORM","THUNDER","FROZEN","MELT","RIVER","WET","DRY","BLOW","COAT","LIGHT","SHINE","SKY","STRONG","TIRED","WARM","WAVES","ICE","PIPE","BUILDING","SAILING"]
+  },
+  {
+    id: "outdoors", num: "Unit 3", name: "Great Outdoors", emoji: "🌲", theme: "outdoors",
+    decos: ["🌲","🏕","🦋","🌿","⛺","🗺"],
+    words: ["CAVE","FIELD","HILL","LEAVES","MAP","ROAD","ROCK","SHELL","VILLAGE","BRIDGE","ISLAND","LAUGH","STARS","TENT","HIGH","ROPE","CAMPING","BEAUTIFUL"]
+  },
+  {
+    id: "past", num: "Unit 4", name: "The Past", emoji: "🏺", theme: "past",
+    decos: ["🏺","⚗","🔍","📜","🪙","⛵"],
+    words: ["HONEY","INK","MAKEUP","SHIP","SOCKS","UMBRELLA","DREAM","DROP","FISH","FLOOR","HELP","MAT","OIL","SEW","SLEEP","SOAP","COIN","BOWLING","MEDICINE","ALPHABET","TOOTHBRUSH","TOOTHPASTE"]
+  },
+  {
+    id: "celebrate", num: "Unit 5", name: "Celebrations", emoji: "🎉", theme: "celebrate",
+    decos: ["🎉","🎂","🎈","🎁","🎆","🎊"],
+    words: ["CAKE","LUCKY","PARTY","PASTA","PRESENT","BAND","FEAST","FESTIVAL","MONEY","NOISE","COSTUME","INVITE","ENVELOPE","MILKSHAKE"]
+  },
+  {
+    id: "art", num: "Unit 6", name: "Art & Artists", emoji: "🎨", theme: "art",
+    decos: ["🎨","🖌","✏","🖼","🎭","✨"],
+    words: ["ARTIST","FACE","FAMOUS","FRONT","HALF","MIDDLE","SIDE","TOP","BOTTOM","CIRCLE","FINGERS","GLASSES","KNEES","LINE","NECK","SMILE","LOVELY","PAINTING","ACCIDENT","SHAPES","SHOULDERS","WALKWAY","LOCAL"]
+  },
+  {
+    id: "community", num: "Unit 7", name: "Community", emoji: "🏘", theme: "community",
+    decos: ["🏘","👮","🚒","📬","🏥","🚌"],
+    words: ["COMIC","COVER","DRIVE","LEND","NEAR","NURSE","PAGE","TRUCK","WRITER","LADDER","MEET","SIGN","BORROW","NOTEBOOK","NEWSPAPER"]
+  },
+  {
+    id: "animals", num: "Unit 8", name: "Animals", emoji: "🐾", theme: "animals",
+    decos: ["🐾","🐬","🐴","🐑","🐀","🦅"],
+    words: ["CUTE","DOLPHIN","DONKEY","FEED","HEAR","LAMB","RESCUE","SMELL","TAIL","BURN","COPY","FALL","FIRST","HOLD","LAST","PULL","SHOUT","SHOW","SNEEZE","STEAL","STOP","CHASE","HUNT"]
+  },
+  {
+    id: "learning", num: "Unit 9", name: "How We Learn", emoji: "📚", theme: "learning",
+    decos: ["📚","🧠","🏆","✏","🎯","🔭"],
+    words: ["BALLET","CHESS","COUNT","PRACTICE","SCORE","SKATE","SMART","TEST","BRING","CAMERA","RELAX","SAFE","SELL","SERVE","STRETCH","ENTRANCE","BRILLIANT","DIFFICULT","VOLLEYBALL","QUICKLY"]
+  },
+  {
+    id: "food", num: "Unit 10", name: "Food", emoji: "🍕", theme: "food",
+    decos: ["🍕","🍎","🍜","🥗","🧁","🍓"],
+    words: ["BURGER","CUP","NOODLES","SALAD","SOUP","SPOON","TASTY","TEA","TOMATO","BOWL","CHEF","COOKING","CURRY","FLOUR","GLASS","HUNGRY","MENU","PLATE","SAUCE","THIRSTY","WAITER","VITAMIN","LEMONADE","PANCAKES","STRAWBERRY"]
+  }
+];
+
+// Filter: 3–8 letters, no spaces
+UNITS.forEach(function(u) {
+  u.words = u.words.filter(function(w) { return w.length >= 3 && w.length <= 8; });
+});
+
+// ============================================================
+// STATE
+// ============================================================
+var currentUnit = null;
+var wordPool = [];
+var playedWords = [];
+var targetWord = "";
+var currentRow = 0;
+var currentTiles = [];
+var guessHistory = [];
+var gameOver = false;
+var animating = false;
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderUnitGrid();
+  document.addEventListener('keydown', handlePhysicalKey);
+
+  // iOS-safe button listeners (avoid onclick attributes)
+  document.getElementById('back-btn').addEventListener('click', goBack);
+  document.getElementById('back-btn').addEventListener('touchend', function(e) { e.preventDefault(); goBack(); });
+
+  document.getElementById('new-word-btn').addEventListener('click', startNewWord);
+  document.getElementById('new-word-btn').addEventListener('touchend', function(e) { e.preventDefault(); startNewWord(); });
+}
+
+function renderUnitGrid() {
+  var grid = document.getElementById('unit-grid');
+  grid.innerHTML = '';
+  UNITS.forEach(function(u, i) {
+    var card = document.createElement('div');
+    card.className = 'unit-card';
+    card.setAttribute('data-theme', u.theme);
+    card.innerHTML =
+      '<span class="emoji">' + u.emoji + '</span>' +
+      '<div class="unit-num">' + u.num + '</div>' +
+      '<div class="unit-name">' + u.name + '</div>' +
+      '<div class="word-count">' + u.words.length + ' words</div>';
+
+    // Both click and touchend for iOS
+    (function(idx) {
+      card.addEventListener('click', function() { startUnit(idx); });
+      card.addEventListener('touchend', function(e) { e.preventDefault(); startUnit(idx); });
+    })(i);
+
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+// UNIT / NAVIGATION
+// ============================================================
+function startUnit(idx) {
+  currentUnit = UNITS[idx];
+  wordPool = currentUnit.words.slice();
+  playedWords = [];
+  applyTheme(currentUnit.theme, currentUnit.decos);
+  document.getElementById('unit-screen').style.display = 'none';
+  var gs = document.getElementById('game-screen');
+  gs.style.display = '-webkit-flex';
+  gs.style.display = 'flex';
+  document.getElementById('game-emoji').textContent = currentUnit.emoji;
+  document.getElementById('game-title').textContent = currentUnit.name;
+  startNewWord();
+}
+
+function applyTheme(theme, decos) {
+  document.body.className = 'theme-' + theme;
+  var ids = ['deco1','deco2','deco3','deco4','deco5','deco6'];
+  ids.forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = decos[i] || '';
+  });
+}
+
+function goBack() {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('unit-screen').style.display = 'block';
+  document.body.className = 'theme-family';
+  var defaults = ["🏠","👨‍👩‍👧","💻","🛁","📱","🍳"];
+  ['deco1','deco2','deco3','deco4','deco5','deco6'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = defaults[i];
+  });
+}
+
+// ============================================================
+// WORD LOGIC
+// ============================================================
+function startNewWord() {
+  if (wordPool.length === 0) {
+    wordPool = currentUnit.words.slice();
+    playedWords = [];
+  }
+  var idx = Math.floor(Math.random() * wordPool.length);
+  targetWord = wordPool[idx];
+  wordPool.splice(idx, 1);
+  playedWords.push(targetWord);
+
+  currentRow = 0;
+  currentTiles = [];
+  for (var r = 0; r < 6; r++) {
+    currentTiles.push([]);
+    for (var c = 0; c < targetWord.length; c++) {
+      currentTiles[r].push('');
+    }
+  }
+  guessHistory = [];
+  gameOver = false;
+  animating = false;
+
+  updateProgress();
+  document.getElementById('hint-bar').textContent = '🔤 Guess the ' + targetWord.length + '-letter word!';
+  renderGrid();
+  renderKeyboard();
+  document.getElementById('message-area').innerHTML = '';
+  document.getElementById('new-word-btn').style.display = 'none';
+}
+
+function updateProgress() {
+  document.getElementById('progress-pill').textContent = playedWords.length + '/' + currentUnit.words.length;
+}
+
+// ============================================================
+// GRID
+// ============================================================
+function renderGrid() {
+  var grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (var r = 0; r < 6; r++) {
+    var row = document.createElement('div');
+    row.className = 'grid-row';
+    row.id = 'row-' + r;
+    for (var c = 0; c < targetWord.length; c++) {
+      var tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.id = 'tile-' + r + '-' + c;
+      row.appendChild(tile);
+    }
+    grid.appendChild(row);
+  }
+  // Restore history
+  guessHistory.forEach(function(g, r) {
+    g.result.forEach(function(res, c) {
+      var tile = document.getElementById('tile-' + r + '-' + c);
+      if (tile) { tile.textContent = g.word[c]; tile.className = 'tile ' + res; }
+    });
+  });
+}
+
+function updateCurrentRowDisplay() {
+  var letters = currentTiles[currentRow];
+  for (var c = 0; c < targetWord.length; c++) {
+    var tile = document.getElementById('tile-' + currentRow + '-' + c);
+    if (tile) {
+      tile.textContent = letters[c] || '';
+      tile.className = letters[c] ? 'tile has-letter' : 'tile';
+    }
+  }
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+var KB_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['ENTER','Z','X','C','V','B','N','M','⌫']
+];
+
+function renderKeyboard() {
+  var kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  var state = getLetterStates();
+
+  KB_ROWS.forEach(function(row) {
+    var rowDiv = document.createElement('div');
+    rowDiv.className = 'kb-row';
+    row.forEach(function(k) {
+      var btn = document.createElement('button');
+      btn.className = 'key' + (k === 'ENTER' || k === '⌫' ? ' wide' : '');
+      btn.textContent = k;
+      if (state[k]) btn.classList.add(state[k]);
+      btn.type = 'button';
+
+      // Both click and touchend — touchend needed for iOS
+      (function(key) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          handleKey(key);
+        });
+        btn.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          handleKey(key);
+        });
+      })(k);
+
+      rowDiv.appendChild(btn);
+    });
+    kb.appendChild(rowDiv);
+  });
+}
+
+function getLetterStates() {
+  var state = {};
+  guessHistory.forEach(function(g) {
+    g.word.split('').forEach(function(l, i) {
+      var r = g.result[i];
+      if (r === 'correct') state[l] = 'correct';
+      else if (r === 'present' && state[l] !== 'correct') state[l] = 'present';
+      else if (!state[l]) state[l] = 'absent';
+    });
+  });
+  return state;
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+function handlePhysicalKey(e) {
+  if (document.getElementById('game-screen').style.display === 'none') return;
+  var k = e.key.toUpperCase();
+  if (k === 'BACKSPACE') handleKey('⌫');
+  else if (k === 'ENTER') handleKey('ENTER');
+  else if (/^[A-Z]$/.test(k)) handleKey(k);
+}
+
+function handleKey(key) {
+  if (animating) return;
+  if (gameOver) { if (key === 'ENTER') startNewWord(); return; }
+
+  var letters = currentTiles[currentRow];
+  var len = targetWord.length;
+
+  if (key === '⌫') {
+    // Find last non-empty letter — avoid findLastIndex (no Safari <15)
+    var lastFilled = -1;
+    for (var i = 0; i < len; i++) { if (letters[i] !== '') lastFilled = i; }
+    if (lastFilled !== -1) { letters[lastFilled] = ''; updateCurrentRowDisplay(); }
+    return;
+  }
+
+  if (key === 'ENTER') {
+    var guess = letters.join('');
+    if (guess.length < len) { showMessage('Need ' + len + ' letters!', 'info'); shakeRow(currentRow); return; }
+    submitGuess(guess);
+    return;
+  }
+
+  // Letter key
+  if (/^[A-Z]$/.test(key)) {
+    var firstEmpty = -1;
+    for (var j = 0; j < len; j++) { if (letters[j] === '') { firstEmpty = j; break; } }
+    if (firstEmpty !== -1) { letters[firstEmpty] = key; updateCurrentRowDisplay(); }
+  }
+}
+
+function submitGuess(guess) {
+  var result = evaluate(guess, targetWord);
+  animating = true;
+  revealRow(currentRow, guess, result, function() {
+    animating = false;
+    guessHistory.push({ word: guess, result: result });
+    currentRow++;
+    renderKeyboard();
+
+    if (guess === targetWord) {
+      gameOver = true;
+      showMessage('🎉 Amazing! You got it!', 'win');
+      launchConfetti();
+      document.getElementById('new-word-btn').style.display = 'block';
+    } else if (currentRow >= 6) {
+      gameOver = true;
+      showMessage('The word was: ' + targetWord, 'lose');
+      document.getElementById('new-word-btn').style.display = 'block';
+    }
+  });
+}
+
+function evaluate(guess, target) {
+  var result = [];
+  var targetArr = target.split('');
+  var guessArr = guess.split('');
+  var used = [];
+  for (var i = 0; i < target.length; i++) { result.push('absent'); used.push(false); }
+
+  for (var i = 0; i < guessArr.length; i++) {
+    if (guessArr[i] === targetArr[i]) { result[i] = 'correct'; used[i] = true; }
+  }
+  for (var i = 0; i < guessArr.length; i++) {
+    if (result[i] === 'correct') continue;
+    for (var j = 0; j < targetArr.length; j++) {
+      if (!used[j] && guessArr[i] === targetArr[j]) { result[i] = 'present'; used[j] = true; break; }
+    }
+  }
+  return result;
+}
+
+// ============================================================
+// ANIMATION — scaleY instead of rotateX (better iOS support)
+// ============================================================
+function revealRow(rowIdx, word, result, callback) {
+  var len = word.length;
+  var completed = 0;
+  for (var c = 0; c < len; c++) {
+    (function(col) {
+      setTimeout(function() {
+        var tile = document.getElementById('tile-' + rowIdx + '-' + col);
+        if (!tile) return;
+        tile.classList.add('reveal');
+        setTimeout(function() {
+          tile.className = 'tile ' + result[col];
+          tile.textContent = word[col];
+          completed++;
+          if (completed === len && callback) callback();
+        }, 250);
+      }, col * 130);
+    })(c);
+  }
+}
+
+function shakeRow(rowIdx) {
+  for (var c = 0; c < targetWord.length; c++) {
+    (function(col) {
+      var tile = document.getElementById('tile-' + rowIdx + '-' + col);
+      if (!tile) return;
+      tile.classList.add('shake');
+      setTimeout(function() { tile.classList.remove('shake'); }, 400);
+    })(c);
+  }
+}
+
+// ============================================================
+// MESSAGES
+// ============================================================
+function showMessage(text, type) {
+  document.getElementById('message-area').innerHTML =
+    '<span class="message ' + type + '">' + text + '</span>';
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti() {
+  var colors = ['#e53935','#fb8c00','#fdd835','#43a047','#1e88e5','#8e24aa','#00acc1'];
+  for (var i = 0; i < 50; i++) {
+    (function(delay) {
+      setTimeout(function() {
+        var el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.left = (Math.random() * 100) + 'vw';
+        el.style.top = '-20px';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        var sz = (7 + Math.random() * 7) + 'px';
+        el.style.width = sz; el.style.height = sz;
+        el.style.animationDuration = (1.4 + Math.random() * 1.4) + 's';
+        document.body.appendChild(el);
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 3000);
+      }, delay);
+    })(i * 35);
+  }
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+</body>
+</html>
