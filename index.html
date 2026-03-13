@@ -853,6 +853,12 @@ function handleKey(key) {
   if (key === 'ENTER') {
     var guess = letters.join('');
     if (guess.length < len) { showMessage('Need ' + len + ' letters!', 'info'); shakeRow(currentRow); return; }
+    // Check if guess is in the unit's word list
+    if (currentUnit.words.indexOf(guess) === -1) {
+      showMessage('❌ Not in the word list!', 'info');
+      shakeRow(currentRow);
+      return;
+    }
     submitGuess(guess);
     return;
   }
